@@ -1,0 +1,13 @@
+.coverage
+coverage.xml
+.cache
+*.eggs
+*.egg-info
+docs/_build
+build
+dist
+*.pyc
+.DS_Store
+.pytest_cache/
+node_modules
+version.json

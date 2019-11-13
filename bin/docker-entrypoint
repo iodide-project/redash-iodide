@@ -1,0 +1,129 @@
+#!/bin/bash
+set -e
+
+export PYTHONPATH="/app:/extension/src:$PYTHONPATH"
+
+# make sure the npm clean command is only removing the content of /app/client/dist
+# and not the directory itself so mounting it works as expected
+if [ -f /app/package.json ]; then
+    printf "Patching package.json..."
+    if ! sed -i -e 's/"rm -rf \.\/client\/dist\/"/"rm -rf \.\/client\/dist\/\*"/g' /app/package.json
+    then
+      echo "failed."
+    else
+      echo "done."
+    fi
+fi
+
+install() {
+  # always install inside the running container
+  pushd /extension
+  # Create/update the virtualenv here, which has explicit access to the
+  # global site-packages, since that's where Redash has installed its deps
+  virtualenv --always-copy --system-site-packages /home/redash/.cache/venv
+  # shellcheck disable=SC1091
+  source /home/redash/.cache/venv/bin/activate
+  # work-around for pip installation issue
+  touch /home/redash/.cache/venv/lib/python2.7/site-packages/easy-install.pth
+  # Install the current working directory (/extension) by egg-linking
+  # (pseudo symlink) and its test and dev extras
+  pip install -e ".[dev,test]"
+  # Trash the existing and copy the current extension bundles again
+  rm -rf /app/client/app/extensions/*
+  /app/bin/bundle-extensions
+  popd
+}
+
+server() {
+  exec /usr/local/bin/gunicorn -b 0.0.0.0:5000 --name redash -w${REDASH_WEB_WORKERS:-4} redash.wsgi:app
+}
+
+flask_devserver() {
+  export FLASK_DEBUG=1
+  exec /app/manage.py runserver --debugger --reload -h 0.0.0.0
+}
+
+webpack_devserver() {
+  install
+  # Start a watchdog to copy extension bundles over to /app/client/app/extensions
+  watchmedo shell-command \
+    --patterns="*.js;*.jsx" \
+    --ignore-directories \
+    --recursive \
+    --command='/app/bin/bundle-extensions' \
+    /extension/ &
+  npm run start
+}
+
+create_tables() {
+  pushd /app
+  /extension/bin/wait-for-it.sh postgres:5432 -- /app/manage.py database create_tables
+  popd
+}
+
+use_test_database() {
+  export REDASH_DATABASE_URL="postgresql://postgres@postgres/tests"
+}
+
+create_test_tables() {
+  use_test_database
+  create_tables
+}
+
+tests() {
+  use_test_database
+  create_tables
+  install
+  if [ $# -eq 0 ]; then
+    TEST_ARGS=/extension
+  else
+    TEST_ARGS=$@
+  fi
+  pushd /app
+  python -m pytest $TEST_ARGS
+}
+
+manage() {
+  install
+  exec /app/manage.py $*
+}
+
+case "$1" in
+  tests)
+  shift
+  tests $@
+;;
+  ci)
+  shift
+  tests $@
+  bash <(curl -s https://codecov.io/bash) -s /tmp
+;;
+  create_test_tables)
+  shift
+  create_test_tables
+;;
+  create_tables)
+  shift
+  create_tables
+;;
+  manage)
+  shift
+  manage $@
+;;
+  flask_devserver)
+  shift
+  flask_devserver $@
+;;
+  server)
+  shift
+  server $@
+;;
+  webpack_devserver)
+  shift
+  webpack_devserver $@
+;;
+  *)
+  install
+  exec "$@"
+;;
+esac
