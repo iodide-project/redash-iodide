@@ -25,7 +25,7 @@ services:
       REDASH_IODIDE_NOTEBOOK_API_URL:
       REDASH_IODIDE_AUTH_TOKEN:
   worker:
-    image: mozilla/redash:rc
+    image: redash/redash:8.0.0.b32245
     command: scheduler
     depends_on:
       - server
