@@ -1,7 +1,10 @@
-.PHONY: bash build clean database devserver node_modules test_database test up
+.PHONY: shell root-shell build clean database devserver node_modules test_database test up
 
-bash:
+shell:
 	docker-compose run --rm server bash
+
+root-shell:
+	docker-compose run --rm -u 0 server bash
 
 build:
 	docker-compose build --pull

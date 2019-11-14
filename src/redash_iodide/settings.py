@@ -51,5 +51,10 @@ class IodideSettingsResource(BaseResource):
 
 def extension(app):
     logger.info("Loading Iodide setting extension")
-    add_resource(app, IodideSettingsResource, "/api/integrations/iodide/settings")
+    add_resource(
+        app,
+        IodideSettingsResource,
+        "/api/integrations/iodide/settings",
+        endpoint="idodide_settings",
+    )
     logger.info("Loaded Iodide setting extension")

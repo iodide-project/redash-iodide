@@ -47,6 +47,9 @@ class IodideNotebookResource(BaseResource):
 def extension(app):
     logger.info("Loading Iodide integration extension")
     add_resource(
-        app, IodideNotebookResource, "/api/integrations/iodide/<query_id>/notebook"
+        app,
+        IodideNotebookResource,
+        "/api/integrations/iodide/<query_id>/notebook",
+        endpoint="idodide_notebook",
     )
     logger.info("Loaded Iodide integration extension")

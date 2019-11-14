@@ -5,7 +5,7 @@ import mock
 from mock import patch
 from redash_iodide import settings
 from six.moves import reload_module
-from tests import BaseTestCase
+from tests import BaseTestCase, authenticate_request
 
 
 class TestIodideIntegration(BaseTestCase):
@@ -13,6 +13,8 @@ class TestIodideIntegration(BaseTestCase):
 
     def setUp(self):
         super(TestIodideIntegration, self).setUp()
+        self.admin = self.factory.create_admin()
+        self.data_source = self.factory.create_data_source()
         variables = self.SETTING_OVERRIDES.copy()
         with patch.dict(os.environ, variables):
             reload_module(settings)
@@ -20,22 +22,22 @@ class TestIodideIntegration(BaseTestCase):
         # Queue a cleanup routine that reloads the settings without overrides
         # once the test ends
         self.addCleanup(lambda: reload_module(settings))
+        authenticate_request(self.client, self.admin)
 
     def test_settings(self):
-        admin = self.factory.create_admin()
-
-        rv = self.make_request("get", "/api/integrations/iodide/settings", user=admin)
+        rv = self.client.get("/api/integrations/iodide/settings",)
         self.assertEquals(rv.status_code, 200)
         self.assertEquals(
-            rv.json, {"iodideURL": self.SETTING_OVERRIDES["REDASH_IODIDE_URL"]}
+            rv.data,
+            json.dumps({"iodideURL": self.SETTING_OVERRIDES["REDASH_IODIDE_URL"]}),
         )
 
     @mock.patch("requests.post")
     def test_notebook_post(self, mock_post):
-        admin = self.factory.create_admin()
-        data_source = self.factory.create_data_source()
         query = self.factory.create_query(
-            user=admin, data_source=data_source, query_text="select * from events"
+            user=self.admin,
+            data_source=self.data_source,
+            query_text="select * from events",
         )
 
         mock_value = {"id": query.id}
@@ -47,8 +49,6 @@ class TestIodideIntegration(BaseTestCase):
         mock_response.json = mock_json
         mock_post.return_value = mock_response
 
-        rv = self.make_request(
-            "post", "/api/integrations/iodide/%s/notebook" % query.id, user=admin
-        )
+        rv = self.client.post("/api/integrations/iodide/%s/notebook" % query.id)
         self.assertEquals(rv.status_code, 200)
-        self.assertEquals(rv.json, {"id": query.id})
+        self.assertEquals(rv.data, json.dumps({"id": query.id}))

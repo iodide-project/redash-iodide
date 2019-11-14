@@ -64,5 +64,10 @@ def extension(app):
     logger.info("Loading Iodide kernel extension")
     # Add a hook for our custom request loader
     login_manager.request_loader(iodide_request_loader)
-    add_resource(app, IodideQueryBackendResource, "/api/integrations/iodide/query")
+    add_resource(
+        app,
+        IodideQueryBackendResource,
+        "/api/integrations/iodide/query",
+        endpoint="idodide_query",
+    )
     logger.info("Loaded Iodide kernel extension")
