@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Upload to PyPI
           command: |
-            twine upload -u "${FLIT_USERNAME}" -p "${FLIT_PASSWORD}" --disable-progress-bar dist/*
+            twine upload -u "${TWINE_USERNAME}" -p "${TWINE_PASSWORD}" --disable-progress-bar dist/*
 
 # Workflows: see https://circleci.com/docs/2.0/workflows/
 workflows:
