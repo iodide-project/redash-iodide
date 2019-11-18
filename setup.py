@@ -43,7 +43,6 @@ setup(
         "redash.extensions": [
             "iodide_explore = redash_iodide.explore.extension:extension",
             "iodide_settings = redash_iodide.settings:extension",
-            "iodide_kernels = redash_iodide.kernels:extension",
         ],
         "redash.bundles": [
             "iodide_explore = redash_iodide.explore",

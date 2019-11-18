@@ -4,6 +4,7 @@ Changelog
 2019.11.0
 ----------
 
-:date: XXXX-XX-XX
+:date: 2019-11-18
 
-* First release with Redash ==> Iodide integration.
+* First release with Redash ==> Iodide integration "Explore in Iodide" as
+  extracted from redash-stmo.
