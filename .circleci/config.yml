@@ -1,4 +1,4 @@
-version: 2.0
+version: 2
 # Jobs: see https://circleci.com/docs/2.0/jobs-steps/
 jobs:
   test:
@@ -47,7 +47,7 @@ jobs:
 # Workflows: see https://circleci.com/docs/2.0/workflows/
 workflows:
   version: 2
-  build:
+  build_and_test:
     jobs:
       - test
   deploy:
