@@ -1,0 +1,2 @@
+fixes:
+  - "/extension/::"        # reduce root from /extension/.. to a relative path
