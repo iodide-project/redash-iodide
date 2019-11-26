@@ -21,13 +21,6 @@ Inherits Redash's Docker setup
   a close development/production parity and extends it in various ways, e.g.
   an own docker-compose configuration, an own docker-entrypoint script.
 
-  Specifically it uses Mozilla's "rc" tagged version of the Redash Docker
-  image, which includes (at the time of writing this, 2019-06-13) many
-  customizations from Mozilla's pseudo-temporary and regularly updated Redash
-  fork. The "rc" tagged Docker image is updated every time a "rebase" from
-  upstream Redash happens and is put to testing in the "release" Redash
-  environment on Mozilla's server.
-
   Please review the `Redash Docker installation guidelines <https://redash.io/help/open-source/dev-guide/docker>`_ before continuing. It's important to
   know those basics since many decisions for redash-iodide were derived from
   it. Thank you.
@@ -83,9 +76,9 @@ Redash containers and in effect automatically build the local Docker image
 as well if it doesn't exist.
 
 If you'd like to build the local Docker image separately or if you'd like to
-fetch the latest version of the base Redash Docker image (or its child
-image of the Mozilla Redash fork), e.g. in the event of a new rebase by
-Mozilla staff, please run the following::
+fetch the latest version of the base Redash Docker image, e.g. in the event
+of a new Redash release or other changes in this project, please run the
+following::
 
     make build
 

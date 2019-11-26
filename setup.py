@@ -18,7 +18,7 @@ setup(
         'local_scheme': 'dirty-tag'
     },
     setup_requires=['setuptools_scm'],
-    description="Extensions to Redash by Mozilla",
+    description="Extensions to Redash for Iodide by Mozilla",
     python_requires="==2.*,>=2.7.0",
     project_urls={"homepage": "https://github.com/iodide-project/redash-iodide"},
     author="Mozilla Foundation",
@@ -58,7 +58,6 @@ setup(
     install_requires=[
         "requests",
         "six",
-        "PyJWT",
     ],
     extras_require={
         "test": [
