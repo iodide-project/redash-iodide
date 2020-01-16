@@ -13,13 +13,9 @@ setup(
     long_description=readme,
     long_description_content_type="text/x-rst",
     name="redash-iodide",
-    use_scm_version={
-        'version_scheme': 'post-release',
-        'local_scheme': 'dirty-tag'
-    },
-    setup_requires=['setuptools_scm'],
+    use_scm_version={"version_scheme": "post-release", "local_scheme": "dirty-tag"},
+    setup_requires=["setuptools_scm"],
     description="Extensions to Redash for Iodide by Mozilla",
-    python_requires="==2.*,>=2.7.0",
     project_urls={"homepage": "https://github.com/iodide-project/redash-iodide"},
     author="Mozilla Foundation",
     author_email="dev-webdev@lists.mozilla.org",
@@ -46,19 +42,13 @@ setup(
             "iodide_explore = redash_iodide.explore.extension:extension",
             "iodide_settings = redash_iodide.settings:extension",
         ],
-        "redash.bundles": [
-            "iodide_explore = redash_iodide.explore",
-        ],
-        "redash.periodic_tasks": [
-        ],
+        "redash.bundles": ["iodide_explore = redash_iodide.explore",],
+        "redash.periodic_tasks": [],
     },
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
+    packages=find_packages("src"),
+    package_dir={"": "src"},
     include_package_data=True,
-    install_requires=[
-        "requests",
-        "six",
-    ],
+    install_requires=["requests", "six",],
     extras_require={
         "test": [
             "flake8==3.5.0",

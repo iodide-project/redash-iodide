@@ -36,13 +36,17 @@ class IodideButton extends React.Component {
     this.iodideWindow = window.open('', '_blank');
 
     const settingsPromise = this.getHandledFetch(`${this.apiBase}settings`);
-    const notebookPromise = this.getHandledFetch(`${this.apiBase}${queryID}/notebook`, 'POST');
+    const notebookPromise = this.getHandledFetch(
+      `${this.apiBase}${queryID}/notebook`,
+      'POST',
+    );
 
-    Promise.all([settingsPromise, notebookPromise])
-      .then(([{ iodideURL }, { id }]) => {
+    Promise.all([settingsPromise, notebookPromise]).then(
+      ([{ iodideURL }, { id }]) => {
         this.iodideWindow.location.href = `${iodideURL}notebooks/${id}`;
         this.hideSpinner();
-      });
+      },
+    );
   };
 
   showSpinner = () => {
@@ -58,11 +62,12 @@ class IodideButton extends React.Component {
     this.setState({ showSpinner: false });
   };
 
-  getHandledFetch = (url, method = 'GET') => (
-    fetch(url, { method }).then(this.handleFetchResponse).catch(() => {
-      this.handleFetchError();
-    })
-  );
+  getHandledFetch = (url, method = 'GET') =>
+    fetch(url, { method })
+      .then(this.handleFetchResponse)
+      .catch(() => {
+        this.handleFetchError();
+      });
 
   handleFetchResponse = (response) => {
     if (response.status === 200) return response.json();
