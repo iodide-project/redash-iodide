@@ -42,13 +42,13 @@ setup(
             "iodide_explore = redash_iodide.explore.extension:extension",
             "iodide_settings = redash_iodide.settings:extension",
         ],
-        "redash.bundles": ["iodide_explore = redash_iodide.explore",],
+        "redash.bundles": ["iodide_explore = redash_iodide.explore"],
         "redash.periodic_tasks": [],
     },
     packages=find_packages("src"),
     package_dir={"": "src"},
     include_package_data=True,
-    install_requires=["requests", "six",],
+    install_requires=["requests", "six"],
     extras_require={
         "test": [
             "flake8==3.5.0",
