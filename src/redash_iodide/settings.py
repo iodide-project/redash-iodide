@@ -34,6 +34,6 @@ def extension(app):
         app,
         IodideSettingsResource,
         "/api/integrations/iodide/settings",
-        endpoint="idodide_settings",
+        endpoint="iodide_settings",
     )
     logger.info("Loaded Iodide setting extension")
