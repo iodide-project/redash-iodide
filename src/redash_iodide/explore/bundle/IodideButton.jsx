@@ -81,18 +81,19 @@ class IodideButton extends React.Component {
     this.iodideWindow = window.open('', '_blank');
 
     const settingsPromise = fetch(`${this.apiBase}/settings`)
-      .then(handleResponse)
-      .catch(handleError);
+      .then(handleResponse).catch(handleError);
 
-    const notebookPromise = fetch(`${this.apiBase}/${queryID}/notebook`, { method: 'POST' })
-      .then(handleResponse)
-      .catch(handleError);
+    const notebookPromise = fetch(
+      `${this.apiBase}/${queryID}/notebook`,
+      { method: 'POST' }
+    ).then(handleResponse).catch(handleError);
 
-    Promise.all([settingsPromise, notebookPromise])
-      .then(([{ iodideURL }, { id }]) => {
+    Promise.all([settingsPromise, notebookPromise]).then(
+      ([{ iodideURL }, { id }]) => {
         this.iodideWindow.location.href = `${iodideURL}notebooks/${id}`;
         this.hideSpinner();
-      });
+      },
+    );
   };
 
   showSpinner = () => {
