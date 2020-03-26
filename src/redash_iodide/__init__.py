@@ -3,4 +3,4 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 """Redash extensions for Iodide by Mozilla"""
 
-__version__ = "2020.1.1"
+__version__ = "2020.3.0"

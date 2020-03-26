@@ -1,10 +1,10 @@
 Changelog
 =========
 
-2020.1.1
+2020.3.0
 --------
 
-:date: 2020-01-17
+:date: 2020-03-27
 
 * Only allow exploring in Iodide if the "default" group in Redash has access to
   the query.

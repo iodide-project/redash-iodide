@@ -19,9 +19,6 @@ logger = logging.getLogger(__name__)
 class IodideNotebookResource(BaseResource):
     TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "iodide-notebook.iomd.j2")
 
-    # The ID of the "default" group in the Redash access control system
-    default_group_id = 2
-
     @require_permission("view_query")
     def post(self, query_id):
         # Iodide does not have an access control system and it certainly does not
@@ -33,7 +30,7 @@ class IodideNotebookResource(BaseResource):
         # in Redash has access to the query.
         groups = get_object_or_404(Query.all_groups_for_query_ids, query_id)
         group_ids = [g[0] for g in groups]
-        if self.default_group_id not in group_ids:
+        if settings.REDASH_DEFAULT_GROUP_ID not in group_ids:
             return {"message": "Couldn't find resource. Please login and try again."}
 
         query = get_object_or_404(Query.get_by_id_and_org, query_id, self.current_org)
