@@ -9,7 +9,9 @@ from tests import BaseTestCase, authenticate_request
 
 
 class TestIodideIntegration(BaseTestCase):
-    SETTING_OVERRIDES = {"REDASH_IODIDE_URL": "https://example.com/"}
+    SETTING_OVERRIDES = {
+        "REDASH_IODIDE_URL": "https://example.com/",
+    }
 
     def setUp(self):
         super(TestIodideIntegration, self).setUp()
@@ -37,14 +39,10 @@ class TestIodideIntegration(BaseTestCase):
 
     @mock.patch("requests.post")
     def test_notebook_post_allowed(self, mock_post):
-        data_source = self.factory.create_data_source(
-            group=self.factory.default_group
-        )
+        data_source = self.factory.create_data_source(group=self.factory.default_group)
 
         query = self.factory.create_query(
-            user=self.admin,
-            data_source=data_source,
-            query_text="select * from events",
+            user=self.admin, data_source=data_source, query_text="select * from events",
         )
 
         # Iodide should return a notebook ID. The notebook ID that it returns
@@ -66,16 +64,17 @@ class TestIodideIntegration(BaseTestCase):
 
     @mock.patch("requests.post")
     def test_notebook_post_disallowed(self, mock_post):
-        data_source = self.factory.create_data_source(
-            group=self.factory.admin_group
-        )
+        data_source = self.factory.create_data_source(group=self.factory.admin_group)
 
         query = self.factory.create_query(
-            user=self.admin,
-            data_source=data_source,
-            query_text="select * from events",
+            user=self.admin, data_source=data_source, query_text="select * from events",
         )
 
         rv = self.client.post("/api/integrations/iodide/%s/notebook" % query.id)
         self.assertEquals(rv.status_code, 200)
-        self.assertEquals(rv.data, json.dumps({"message": "Couldn't find resource. Please login and try again."}))
+        self.assertEquals(
+            rv.data,
+            json.dumps(
+                {"message": "Couldn't find resource. Please login and try again."}
+            ),
+        )

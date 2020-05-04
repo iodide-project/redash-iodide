@@ -21,9 +21,6 @@ IODIDE_NOTEBOOK_API_URL = os.environ.get("REDASH_IODIDE_NOTEBOOK_API_URL", "")
 # The auth token that this extension uses to create new Iodide notebooks
 IODIDE_AUTH_TOKEN = os.environ.get("REDASH_IODIDE_AUTH_TOKEN", "")
 
-# The ID of the "default" group in the Redash access control system
-REDASH_DEFAULT_GROUP_ID = os.environ.get("REDASH_IODIDE_REDASH_DEFAULT_GROUP_ID", "")
-
 
 class IodideSettingsResource(BaseResource):
     @require_permission("view_query")
