@@ -41,6 +41,7 @@ setup(
         "redash.extensions": [
             "iodide_explore = redash_iodide.explore.extension:extension",
             "iodide_settings = redash_iodide.settings:extension",
+            "iodide_groups = redash_iodide.groups:extension",
         ],
         "redash.bundles": ["iodide_explore = redash_iodide.explore"],
         "redash.periodic_tasks": [],

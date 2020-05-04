@@ -13,11 +13,41 @@ class IodideButton extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { showSpinner: false };
-    this.spinnerDelay = 250;
+
     this.apiBase = `${window.location.protocol}//${window.location.hostname}${
       window.location.port ? `:${window.location.port}` : ''
-    }/api/integrations/iodide/`;
+    }/api/integrations/iodide`;
+
+    this.spinnerDelay = 250;
+
+    // The ID of the "default" group in the Redash access control system
+    this.defaultGroupID = 2;
+
+    this.state = {
+      defaultGroupHasAccess: false,
+      showSpinner: false,
+    };
+  }
+
+  componentDidMount() {
+    // Iodide does not have an access control system and it certainly does not
+    // share access control settings with Redash. When the "Explore in Iodide"
+    // button is pressed, the data from that query is made available to all
+    // Iodide users.
+    //
+    // Therefore, we should only show the button if the "default" group in
+    // Redash has access to the query.
+    fetch(`${this.apiBase}/${this.props.queryID}/groups`)
+      .then((response) => {
+        if (response.status === 200 && response.headers.get('content-type') === 'application/json') {
+          return response.json();
+        }
+      })
+      .then((json) => {
+        if (json.groups && json.groups.includes(this.defaultGroupID)) {
+          this.setState({ defaultGroupHasAccess: true });
+        }
+      });
   }
 
   componentWillUnmount() {
@@ -26,6 +56,21 @@ class IodideButton extends React.Component {
   }
 
   openIodideNotebook = (queryID) => {
+    if (!this.state.defaultGroupHasAccess) return;
+
+    const handleError = (msg = 'Could not create Iodide notebook') => {
+      notification.error(msg);
+      this.hideSpinner();
+      this.iodideWindow.close();
+    };
+
+    const handleResponse = (response) => {
+      if (response.status === 200 && response.headers.get('content-type') === 'application/json') {
+        return response.json();
+      }
+      handleError('Bad response from Redash server');
+    };
+
     this.showSpinner();
 
     // Immediately open a window for Iodide. If we open it later, the browser
@@ -35,11 +80,13 @@ class IodideButton extends React.Component {
     // https://stackoverflow.com/a/25050893/4297741
     this.iodideWindow = window.open('', '_blank');
 
-    const settingsPromise = this.getHandledFetch(`${this.apiBase}settings`);
-    const notebookPromise = this.getHandledFetch(
-      `${this.apiBase}${queryID}/notebook`,
-      'POST',
-    );
+    const settingsPromise = fetch(`${this.apiBase}/settings`)
+      .then(handleResponse).catch(handleError);
+
+    const notebookPromise = fetch(
+      `${this.apiBase}/${queryID}/notebook`,
+      { method: 'POST' }
+    ).then(handleResponse).catch(handleError);
 
     Promise.all([settingsPromise, notebookPromise]).then(
       ([{ iodideURL }, { id }]) => {
@@ -62,25 +109,8 @@ class IodideButton extends React.Component {
     this.setState({ showSpinner: false });
   };
 
-  getHandledFetch = (url, method = 'GET') =>
-    fetch(url, { method })
-      .then(this.handleFetchResponse)
-      .catch(() => {
-        this.handleFetchError();
-      });
-
-  handleFetchResponse = (response) => {
-    if (response.status === 200) return response.json();
-    this.handleFetchError('Bad response from Redash server');
-  };
-
-  handleFetchError = (msg = 'Could not create Iodide notebook') => {
-    notification.error(msg);
-    this.hideSpinner();
-    this.iodideWindow.close();
-  };
-
   render() {
+    if (!this.state.defaultGroupHasAccess) return null;
     return (
       <Button
         className="explore-in-iodide"
